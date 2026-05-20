@@ -101,14 +101,10 @@ class _LoginPageState extends State<LoginPage> {
                 key: _formkey,
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.15,
-                    ),
-                    Image.asset(AppImages.appIcon, height: 150),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.052,
-                    ),
-                    // Tabs
+                    // SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.28),
+                    // Image.asset(AppImages.appIcon, height: 150),
+                    // const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -144,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
 
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 40),
 
                     AuthTextfield(
                       hintText: "Email",

@@ -110,6 +110,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<AuthValidationFailed>((event, emit) {
       emit(AuthError("Please fill the form"));
+      emit(Unauthenticated());
     });
   }
 }

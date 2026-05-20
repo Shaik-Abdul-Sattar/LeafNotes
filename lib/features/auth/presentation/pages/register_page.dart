@@ -106,9 +106,10 @@ class _RegisterPageState extends State<RegisterPage> {
                 key: _formkey,
                 child: Column(
                   children: [
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.15),
-                    Image.asset(AppImages.appIcon, height: 150),
-                    const SizedBox(height: 20),
+                    // SizedBox(height: MediaQuery.of(context).size.height * 0.15),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.28),
+                    // Image.asset(AppImages.appIcon, height: 150),
+                    // const SizedBox(height: 20),
                     // Tabs
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -146,7 +147,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ],
                     ),
 
-                    const SizedBox(height: 30),
+                    const SizedBox(height: 40),
 
                     AuthTextfield(
                       hintText: "Username",
