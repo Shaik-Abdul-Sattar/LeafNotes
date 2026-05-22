@@ -5,6 +5,8 @@ import 'package:leaf_notes/features/auth/data/repo/auth_repo_impl.dart';
 import 'package:leaf_notes/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:leaf_notes/features/auth/presentation/bloc/auth_event.dart';
 import 'package:leaf_notes/features/auth/presentation/bloc/auth_state.dart';
+import 'package:leaf_notes/features/notes/data/repo/notes_repository_impl.dart';
+import 'package:leaf_notes/features/notes/presentation/bloc/note_bloc.dart';
 import 'package:leaf_notes/firebase_options.dart';
 import 'package:leaf_notes/features/auth/presentation/pages/auth_page.dart';
 import 'package:leaf_notes/presentation/pages/home_page.dart';
@@ -15,11 +17,12 @@ void main() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   final AuthRepoImpl authRepo = AuthRepoImpl();
-
+  final NotesRepositoryImpl noteRepo = NotesRepositoryImpl();
   runApp(
     MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => AuthBloc(authRepo)..add(CheckAuth())),
+        BlocProvider(create: (context) => NoteBloc(noteRepo)),
       ],
       child: const MyApp(),
     ),

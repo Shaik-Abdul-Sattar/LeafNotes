@@ -38,6 +38,8 @@ dependencies:
   firebase_auth: ^6.5.1
   cloud_firestore: ^6.4.1
   flutter_bloc: ^9.1.1
+  intl: ^0.20.2
+  fleather: ^1.26.0
 
 dev_dependencies:
   flutter_test:
@@ -77,17 +79,19 @@ flutter:
   # "family" key with the font family name, and a "fonts" key with a
   # list giving the asset and other descriptors for the font. For
   # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
+  fonts:
+    - family: InkFree
+      fonts:
+        - asset: assets/fonts/Inkfree.ttf
   #       - asset: fonts/Schyler-Italic.ttf
   #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
+    - family: ManRope
+      fonts:
+        - asset: assets/fonts/Manrope-Regular.ttf
+          weight: 400
+
+        - asset: assets/fonts/Manrope-SemiBold.ttf
+          weight: 600
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
