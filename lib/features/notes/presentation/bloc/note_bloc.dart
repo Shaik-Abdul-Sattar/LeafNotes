@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:leaf_notes/features/notes/data/repo/notes_repository_impl.dart';
@@ -68,12 +70,20 @@ class NoteBloc extends Bloc<NoteEvent, NoteState> {
 
     on<AddNote>((event, emit) async {
       try {
-        emit(state.copyWith(selectedNoteStatus: NoteStatus.loading));
+        emit(state.copyWith(selectedNoteStatus: NoteStatus.saving));
         final note = await _noterepo.addNote(event.newNote);
         emit(
           state.copyWith(
+            selectedNote: note,
             notes: [note, ...state.notes],
-            selectedNoteStatus: NoteStatus.success,
+            selectedNoteStatus: NoteStatus.added,
+          ),
+        );
+      } on TimeoutException {
+        emit(
+          state.copyWith(
+            selectedNoteStatus: NoteStatus.failure,
+            errorMessage: 'No internet connection. Please try again.',
           ),
         );
       } on FirebaseException catch (e) {
@@ -95,7 +105,7 @@ class NoteBloc extends Bloc<NoteEvent, NoteState> {
 
     on<UpdateNote>((event, emit) async {
       try {
-        emit(state.copyWith(selectedNoteStatus: NoteStatus.loading));
+        emit(state.copyWith(selectedNoteStatus: NoteStatus.saving));
 
         await _noterepo.updateNote(event.updatedNote);
         final notes = state.notes
@@ -104,9 +114,15 @@ class NoteBloc extends Bloc<NoteEvent, NoteState> {
                   note.id == event.updatedNote.id ? event.updatedNote : note,
             )
             .toList();
-
         emit(
           state.copyWith(notes: notes, selectedNoteStatus: NoteStatus.success),
+        );
+      } on TimeoutException {
+        emit(
+          state.copyWith(
+            selectedNoteStatus: NoteStatus.failure,
+            errorMessage: 'No internet connection. Please try again.',
+          ),
         );
       } on FirebaseException catch (e) {
         emit(
@@ -172,7 +188,7 @@ class NoteBloc extends Bloc<NoteEvent, NoteState> {
           emit(
             state.copyWith(
               notes: notes,
-              selectedNoteStatus: NoteStatus.success,
+              selectedNoteStatus: NoteStatus.deleted,
             ),
           );
         } else {
@@ -198,6 +214,58 @@ class NoteBloc extends Bloc<NoteEvent, NoteState> {
           ),
         );
       }
+    });
+
+    on<ToggleNoteSelection>((event, emit) {
+      final selectedDeleteNotes = Set<String>.from(state.selectedNotes);
+
+      if (selectedDeleteNotes.contains(event.noteId)) {
+        selectedDeleteNotes.remove(event.noteId);
+      } else {
+        selectedDeleteNotes.add(event.noteId);
+      }
+
+      emit(state.copyWith(selectedNotes: selectedDeleteNotes));
+      print(state.selectedNotes);
+    });
+
+    on<DeleteSelectedNotes>((event, emit) async {
+      try {
+        emit(state.copyWith(status: NoteStatus.loading));
+        for (final id in state.selectedNotes) {
+          await _noterepo.deleteNote(id);
+        }
+
+        final updatedNotes = state.notes
+            .where((note) => !state.selectedNotes.contains(note.id))
+            .toList();
+
+        emit(
+          state.copyWith(
+            notes: updatedNotes,
+            selectedNotes: {},
+            status: NoteStatus.deleted,
+          ),
+        );
+      } on FirebaseException catch (e) {
+        emit(
+          state.copyWith(
+            selectedNoteStatus: NoteStatus.failure,
+            errorMessage: e.message,
+          ),
+        );
+      } catch (e) {
+        emit(
+          state.copyWith(
+            selectedNoteStatus: NoteStatus.failure,
+            errorMessage: "Failed to Delete the notes.",
+          ),
+        );
+      }
+    });
+
+    on<ClearSelectedNotes>((event, emit) {
+      emit(state.copyWith(selectedNotes: {}));
     });
 
     on<ClearNotes>((event, emit) {

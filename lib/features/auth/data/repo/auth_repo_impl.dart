@@ -82,6 +82,5 @@ class AuthRepoImpl implements AuthRepo {
 
     await FirebaseFirestore.instance.collection('users').doc(user.uid).delete();
     await user.delete();
-    // await logout();
   }
 }

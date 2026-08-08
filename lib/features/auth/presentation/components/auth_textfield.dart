@@ -23,6 +23,7 @@ class AuthTextfield extends StatelessWidget {
       controller: controller,
       validator: validator,
       obscureText: obscureText,
+      textInputAction: TextInputAction.done,
       decoration: InputDecoration(
         filled: true,
         fillColor: Colors.white,

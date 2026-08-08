@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:leaf_notes/core/constants/app_images.dart';
 import 'package:leaf_notes/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:leaf_notes/features/auth/presentation/bloc/auth_event.dart';
 import 'package:leaf_notes/features/auth/presentation/bloc/auth_state.dart';
 import 'package:leaf_notes/features/auth/presentation/components/auth_textfield.dart';
 import 'package:leaf_notes/features/auth/utils/auth_validator.dart';
-import 'package:leaf_notes/presentation/pages/home_page.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class LoginPage extends StatefulWidget {
   final void Function()? togglePages;
@@ -44,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: const Color(0xFFF4EEDF),
+      backgroundColor: const Color(0xFFE8F4FD),
       body: Stack(
         children: [
           Positioned(
@@ -55,7 +54,7 @@ class _LoginPageState extends State<LoginPage> {
               width: 150,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFFA8B58A),
+                color: const Color(0xFFB0E3EE),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.2),
@@ -75,7 +74,7 @@ class _LoginPageState extends State<LoginPage> {
               width: 270,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFFA8B58A),
+                color: const Color(0xFFB0E3EE),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.2),
@@ -87,13 +86,13 @@ class _LoginPageState extends State<LoginPage> {
               ),
             ),
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            child: Image.asset(AppImages.bottomLeaves, fit: BoxFit.cover),
-          ),
 
+          // Positioned(
+          //   bottom: 0,
+          //   left: 0,
+          //   right: 0,
+          //   child: Image.asset(AppImages.bottomLeaves, fit: BoxFit.cover),
+          // ),
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -101,10 +100,7 @@ class _LoginPageState extends State<LoginPage> {
                 key: _formkey,
                 child: Column(
                   children: [
-                    // SizedBox(height: MediaQuery.of(context).size.height * 0.15),
-                    SizedBox(height: MediaQuery.of(context).size.height * 0.28),
-                    // Image.asset(AppImages.appIcon, height: 150),
-                    // const SizedBox(height: 20),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.30),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -121,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                               margin: const EdgeInsets.only(top: 4),
                               width: 40,
                               height: 2,
-                              color: Colors.green,
+                              color: Colors.black,
                             ),
                           ],
                         ),
@@ -164,49 +160,64 @@ class _LoginPageState extends State<LoginPage> {
 
                     const SizedBox(height: 30),
 
-                    BlocListener<AuthBloc, AuthState>(
+                    BlocConsumer<AuthBloc, AuthState>(
                       listener: (context, state) {
-                        if (state is Authenticated) {
-                          if (context.mounted) {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const HomePage(),
-                              ),
-                            );
-                          }
-                        }
-
                         if (state is AuthError) {
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(state.message)),
+                              SnackBar(
+                                content: Text(state.message),
+                                behavior: SnackBarBehavior.floating,
+                                margin: EdgeInsets.only(
+                                  left: 16,
+                                  right: 16,
+                                  bottom: MediaQuery.of(
+                                    context,
+                                  ).viewInsets.bottom,
+                                ),
+                                backgroundColor: Colors.lightGreen.shade300,
+                                shape: ContinuousRectangleBorder(
+                                  borderRadius: BorderRadiusGeometry.circular(
+                                    20,
+                                  ),
+                                ),
+                              ),
                             );
                           }
                         }
                       },
-                      child: GestureDetector(
-                        onTap: () {
-                          login();
-                        },
-                        child: Container(
-                          height: 45,
-                          width: 186,
-                          decoration: BoxDecoration(
-                            color: Colors.black87,
-                            borderRadius: BorderRadius.circular(100),
-                          ),
-                          child: const Center(
-                            child: Text(
-                              "LOGIN",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                              ),
+                      builder: (context, state) {
+                        final isLoading = state is AuthLoading;
+                        return GestureDetector(
+                          onTap: () {
+                            if (!isLoading) {
+                              login();
+                            }
+                          },
+                          child: Container(
+                            height: 45,
+                            width: 186,
+                            decoration: BoxDecoration(
+                              color: Colors.black87,
+                              borderRadius: BorderRadius.circular(100),
                             ),
+                            child: isLoading
+                                ? LoadingAnimationWidget.fallingDot(
+                                    color: Colors.white,
+                                    size: 30,
+                                  )
+                                : const Center(
+                                    child: Text(
+                                      "LOGIN",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ),
                           ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
 
                     const SizedBox(height: 20),

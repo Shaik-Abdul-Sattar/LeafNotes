@@ -9,7 +9,9 @@ import 'package:leaf_notes/features/notes/data/repo/notes_repository_impl.dart';
 import 'package:leaf_notes/features/notes/presentation/bloc/note_bloc.dart';
 import 'package:leaf_notes/firebase_options.dart';
 import 'package:leaf_notes/features/auth/presentation/pages/auth_page.dart';
-import 'package:leaf_notes/presentation/pages/home_page.dart';
+import 'package:leaf_notes/features/notes/presentation/pages/home_page.dart';
+import 'package:leaf_notes/presentation/pages/intro_page.dart';
+import 'package:leaf_notes/themes/light_theme.dart';
 // import 'package:leaf_notes/presentation/pages/login_page.dart';
 
 void main() async {
@@ -36,19 +38,21 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+      theme: LightTheme.theme,
       home: BlocBuilder<AuthBloc, AuthState>(
+        buildWhen: (previous, current) => current is! AuthError,
         builder: (context, state) {
+          if (state is AuthIntro) {
+            return const IntroPage();
+          }
           if (state is Authenticated) {
             return const HomePage();
-          } 
-          
-          else if (state is Unauthenticated) {
-            return const AuthPage();
+          } else if (state is Unauthenticated) {
+            if (context.mounted) {
+              return const AuthPage();
+            }
           }
-
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
+          return const AuthPage();
         },
       ),
     );

@@ -13,7 +13,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc(this.authRepo) : super(AuthInitial()) {
     on<CheckAuth>((event, emit) async {
-      emit(AuthLoading());
+      emit(AuthIntro());
       final AppUser? user = await authRepo.getCurrentUser();
 
       if (user != null) {
@@ -40,6 +40,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         }
       } on FirebaseAuthException catch (e) {
         emit(AuthError(AuthExceptionHandler.getMessage(e)));
+        // emit(Unauthenticated());
       } catch (e) {
         emit(AuthError("Unexpected error occured"));
         // emit(Unauthenticated());
@@ -74,9 +75,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(Unauthenticated());
       } on FirebaseAuthException catch (e) {
         emit(AuthError(AuthExceptionHandler.getMessage(e)));
+        emit(Authenticated(_currentuser!));
       } catch (e) {
-        emit(AuthError("Unexpected error occured"));
-        // emit(Unauthenticated());
+        emit(AuthError("Unexpected error occurred"));
+        emit(Authenticated(_currentuser!));
       }
     });
 

@@ -9,7 +9,7 @@ class NotesRepositoryImpl implements NotesRepository {
 
   String get userId {
     final uid = firebaseAuth.currentUser?.uid;
-    if(uid == null) throw Exception("User not Authenticated");
+    if (uid == null) throw Exception("User not Authenticated");
     return uid;
   }
 
@@ -20,7 +20,7 @@ class NotesRepositoryImpl implements NotesRepository {
   Future<List<Note>> getNotes() async {
     try {
       final snapshot = await _notesCollection
-          .orderBy('updatedAt', descending: true)
+          .orderBy('createdAt', descending: true)
           .get();
 
       final notes = snapshot.docs
@@ -53,7 +53,7 @@ class NotesRepositoryImpl implements NotesRepository {
       final newNote = note.copyWith(
         id: docref.id,
         createdAt: DateTime.now(),
-        updatedAt: DateTime.now(),
+        // updatedAt: DateTime.now(),
       );
       await docref.set(newNote.toJson());
       return newNote;
@@ -67,7 +67,7 @@ class NotesRepositoryImpl implements NotesRepository {
     try {
       final docref = _notesCollection.doc(note.id);
 
-      final updatedNote = note.copyWith(updatedAt: DateTime.now());
+      final updatedNote = note.copyWith(/*updatedAt: DateTime.now*/);
 
       await docref.update(updatedNote.toJson());
       return updatedNote;
